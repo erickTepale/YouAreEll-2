@@ -47,9 +47,11 @@ public class YouAreEll {
 
     public String putId(String jpayload) {return MakeURLCall("/ids", "PUT", jpayload);}
 
+    public String postId(String jpayload){return MakeURLCall("/ids", "POST", jpayload);}
+
     public RequestBody parsePayload(String jpayload){
 
-        return RequestBody.create(MediaType.parse("application/json; charset=utf-8"),jpayload );
+        return RequestBody.create(MediaType.parse("application/json; charset=utf-8"),jpayload);
     }
 
     public String MakeURLCall(String mainurl, String method, String jpayload) {
@@ -68,11 +70,20 @@ public class YouAreEll {
                         .put(parsePayload(jpayload))
                         .build();
                 return requestPUT(client, requestPut, mainurl);
+
+            case "POST":
+                Request requestPost = new Request.Builder()
+                        .url("http://zipcode.rocks:8085" + mainurl)
+                        .post(parsePayload(jpayload))
+                        .build();
+                return requestPUT(client, requestPost, mainurl);
+
+
+
         }
 
         return "nada";
     }
-
 
     private String requestPUT(OkHttpClient client, Request request, String mainurl) {
         try (Response response = client.newCall(request).execute()) {
@@ -84,7 +95,7 @@ public class YouAreEll {
         }
 
         return null;
-}
+    }
 
 
     private String requestGET(OkHttpClient client, Request request, String mainurl){

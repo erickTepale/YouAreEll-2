@@ -29,6 +29,19 @@ public class SimpleShell {
         return new ObjectMapper().writeValueAsString(new Id(data[0], data[1]));
     }
 
+    public static String validatePostId(String idInput) throws JsonProcessingException {
+        String[] data = idInput.split(" ");
+        IdController controller = IdController.getInstance();
+
+        for (Id each : controller.getIdList()) {
+            if(data[1].equals(each.getGithub())){
+                System.out.println("Identity already exists; ");
+                return null;
+            }
+        }
+        return parseIdInput(idInput);
+    }
+
     public static void main(String[] args) throws java.io.IOException {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         YouAreEll webber = new YouAreEll(MessageController.getInstance(), IdController.getInstance());
@@ -59,10 +72,16 @@ public class SimpleShell {
             }else if(commandLine.equals("messages")){
                webber.get_messages();
                 MessageController.getInstance().getMessages().stream().forEach(elem->System.out.println(elem+" "));
-            }else if(commandLine.equals("putID")){
+            }else if(commandLine.equals("updateID")){
                 webber.get_ids();
                 System.out.println("Input: {name} {github username}");
                 webber.putId(parseIdInput(console.readLine()));
+            }else if (commandLine.equals("postID")){
+                webber.get_ids();
+                System.out.println("Input: {name} {github username}");
+
+                webber.postId(validatePostId(console.readLine()));
+
             }else if (commandLine.equals("exit")) {
                 System.out.println("bye!");
                 break;
