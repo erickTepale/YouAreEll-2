@@ -7,20 +7,31 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.IdController;
 import controllers.MessageController;
+import models.Id;
+import okhttp3.*;
 
-// Simple Shell is a Console view for YouAreEll.
+// Simple Shell is a Console view for views.YouAreEll.
 public class SimpleShell {
 
 
     public static void prettyPrint(String output) {
         // yep, make an effort to format things nicely, eh?
-        System.out.println(output);
+        //System.out.println(output);
     }
-    public static void main(String[] args) throws java.io.IOException {
 
-        YouAreEll webber = new YouAreEll(new MessageController(), new IdController());
+    // returns a json string of a new Id variable
+    public static String parseIdInput(String idInput) throws JsonProcessingException {
+        String[] data = idInput.split(" ");
+        return new ObjectMapper().writeValueAsString(new Id(data[0], data[1]));
+    }
+
+    public static void main(String[] args) throws java.io.IOException {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        YouAreEll webber = new YouAreEll(MessageController.getInstance(), IdController.getInstance());
         
         String commandLine;
         BufferedReader console = new BufferedReader
@@ -42,7 +53,17 @@ public class SimpleShell {
             //if the user entered a return, just loop again
             if (commandLine.equals(""))
                 continue;
-            if (commandLine.equals("exit")) {
+            else if(commandLine.equals("ids")){
+                webber.get_ids();
+                IdController.getInstance().getIdList().stream().forEach(elem->System.out.println(elem+" "));
+            }else if(commandLine.equals("messages")){
+               webber.get_messages();
+                MessageController.getInstance().getMessages().stream().forEach(elem->System.out.println(elem+" "));
+            }else if(commandLine.equals("putID")){
+                webber.get_ids();
+                System.out.println("Input: {name} {github username}");
+                webber.putId(parseIdInput(console.readLine()));
+            }else if (commandLine.equals("exit")) {
                 System.out.println("bye!");
                 break;
             }
@@ -106,8 +127,6 @@ public class SimpleShell {
                 while ((line = br.readLine()) != null)
                     System.out.println(line);
                 br.close();
-
-
             }
 
             //catch ioexception, output appropriate message, resume waiting for input
@@ -122,7 +141,6 @@ public class SimpleShell {
              * 4. obtain the output stream
              * 5. output the contents returned by the command
              */
-
         }
 
 

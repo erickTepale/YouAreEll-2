@@ -7,12 +7,13 @@ import models.Id;
 import models.Message;
 
 public class MessageController {
-
+    private static MessageController controller = new MessageController();
     private HashSet<Message> messagesSeen;
     // why a HashSet??
 
+    private MessageController(){}
     public ArrayList<Message> getMessages() {
-        return null;
+        return new ArrayList<Message>(messagesSeen);
     }
     public ArrayList<Message> getMessagesForId(Id Id) {
         return null;
@@ -27,5 +28,10 @@ public class MessageController {
     public Message postMessage(Id myId, Id toId, Message msg) {
         return null;
     }
- 
+    public static MessageController getInstance(){
+        return controller;
+    }
+    public void setMessagesSeen(HashSet<Message> messagesSeen){
+        this.messagesSeen = messagesSeen;
+    }
 }
